@@ -1,0 +1,361 @@
+/* ---------------------------------------------------------------------------
+   Lacak.css: Co-located styling for F03 Pelacakan Laporan (MTsN 3 Kota Padang)
+--------------------------------------------------------------------------- */
+
+.lacak-wrapper {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: var(--bg);
+	color: var(--text);
+}
+
+.lacak-container {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 2.5rem 1.5rem 4rem;
+	width: 100%;
+	flex: 1;
+}
+
+/* --- Search View Card --- */
+
+.lacak-search-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 2.5rem;
+	box-shadow: var(--shadow);
+	max-width: 620px;
+	margin: 0 auto;
+}
+
+.lacak-search-head {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.lacak-search-icon {
+	width: 56px;
+	height: 56px;
+	border-radius: 16px;
+	background: var(--primary-soft);
+	color: var(--primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 1rem;
+	box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.lacak-search-title {
+	font-size: 1.75rem;
+	font-weight: 800;
+	margin: 0 0 0.5rem;
+	color: var(--text);
+}
+
+.lacak-search-sub {
+	font-size: 0.94rem;
+	color: var(--muted);
+	line-height: 1.5;
+	margin: 0;
+}
+
+.security-notice-card {
+	background: color-mix(in srgb, var(--primary) 8%, var(--bg));
+	border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+	border-radius: 10px;
+	padding: 0.85rem 1rem;
+	font-size: 0.84rem;
+	color: var(--text);
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	margin-bottom: 1.75rem;
+	line-height: 1.45;
+}
+
+/* --- Detail View Layout --- */
+
+.lacak-detail-head {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 1.75rem 2rem;
+	margin-bottom: 1.75rem;
+	box-shadow: var(--shadow);
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.detail-top-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.ticket-number-badge {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 1.25rem;
+	font-weight: 800;
+	color: var(--text);
+	letter-spacing: 0.03em;
+}
+
+.status-badge {
+	padding: 0.3rem 0.8rem;
+	border-radius: 999px;
+	font-size: 0.82rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.status-terkirim {
+	background: #eff6ff;
+	color: #1d4ed8;
+}
+
+.status-proses {
+	background: var(--primary-soft);
+	color: var(--primary);
+}
+
+.status-info {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.status-selesai {
+	background: #f0fdf4;
+	color: #15803d;
+}
+
+[data-theme="dark"] .status-terkirim {
+	background: #1e3a8a;
+	color: #93c5fd;
+}
+
+[data-theme="dark"] .status-info {
+	background: #451a03;
+	color: #fcd34d;
+}
+
+.detail-meta-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border);
+}
+
+.meta-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.meta-item-label {
+	font-size: 0.78rem;
+	color: var(--muted);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.meta-item-val {
+	font-size: 0.94rem;
+	font-weight: 600;
+	color: var(--text);
+}
+
+/* --- Timeline Status --- */
+
+.timeline-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 1.75rem 2rem;
+	margin-bottom: 1.75rem;
+	box-shadow: var(--shadow);
+}
+
+.timeline-title {
+	font-size: 1.15rem;
+	font-weight: 700;
+	margin: 0 0 1.5rem;
+}
+
+.timeline-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	position: relative;
+	padding-left: 2rem;
+}
+
+.timeline-list::before {
+	content: "";
+	position: absolute;
+	left: 11px;
+	top: 8px;
+	bottom: 8px;
+	width: 2px;
+	background: var(--border);
+}
+
+.timeline-item {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.timeline-dot {
+	position: absolute;
+	left: -2rem;
+	top: 2px;
+	width: 24px;
+	height: 24px;
+	border-radius: 999px;
+	background: var(--bg);
+	border: 2px solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	font-weight: 800;
+	z-index: 2;
+}
+
+.timeline-item-active .timeline-dot {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: #ffffff;
+}
+
+.timeline-item-past .timeline-dot {
+	background: var(--primary-soft);
+	border-color: var(--primary);
+	color: var(--primary);
+}
+
+.timeline-item-title {
+	font-weight: 700;
+	font-size: 0.98rem;
+	color: var(--text);
+}
+
+.timeline-item-date {
+	font-size: 0.78rem;
+	color: var(--muted);
+}
+
+.timeline-item-desc {
+	font-size: 0.88rem;
+	color: var(--muted);
+	line-height: 1.45;
+	margin-top: 0.15rem;
+}
+
+/* --- Report Details Section --- */
+
+.report-summary-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 1.75rem 2rem;
+	margin-bottom: 1.75rem;
+	box-shadow: var(--shadow);
+}
+
+/* --- Case Messaging Thread --- */
+
+.messages-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 1.75rem 2rem;
+	margin-bottom: 1.75rem;
+	box-shadow: var(--shadow);
+}
+
+.messages-thread {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	margin-bottom: 1.75rem;
+	max-height: 420px;
+	overflow-y: auto;
+	padding-right: 0.5rem;
+}
+
+.message-bubble {
+	max-width: 80%;
+	padding: 1rem 1.25rem;
+	border-radius: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	line-height: 1.5;
+	font-size: 0.92rem;
+}
+
+.message-officer {
+	align-self: flex-start;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	color: var(--text);
+	border-top-left-radius: 2px;
+}
+
+.message-reporter {
+	align-self: flex-end;
+	background: var(--primary-soft);
+	border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+	color: var(--text);
+	border-top-right-radius: 2px;
+}
+
+.message-sender-name {
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: var(--primary);
+}
+
+.message-time {
+	font-size: 0.72rem;
+	color: var(--muted);
+	align-self: flex-end;
+}
+
+.message-input-form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--border);
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 768px) {
+	.lacak-search-card {
+		padding: 1.75rem 1.25rem;
+	}
+
+	.lacak-detail-head,
+	.timeline-card,
+	.report-summary-card,
+	.messages-card {
+		padding: 1.25rem;
+	}
+
+	.message-bubble {
+		max-width: 92%;
+	}
+}

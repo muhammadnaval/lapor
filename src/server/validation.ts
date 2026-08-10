@@ -1,0 +1,94 @@
+/**
+ * Route-level request validation via TypeBox (schemas live in the route
+ * files). Wraps the JSON body in a typed middleware so TypeBox failures
+ * surface as a `ValidationFailed` error carrying per-field messages; app.ts
+ * maps that to Inertia 422 page payloads (same contract as the Elysia era).
+ */
+import type { Static, TSchema } from "@sinclair/typebox";
+import { FormatRegistry, Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
+import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
+import type { AppEnv } from "./inertia-middleware";
+
+// Elysia's TypeBox wrapper pre-registered the standard string formats; plain
+// @sinclair/typebox does not.
+FormatRegistry.Set("email", (value) =>
+	/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value)),
+);
+
+const JSON_CONTENT_TYPE =
+	/^application\/([a-z-.+]+(\+json)|json)(;\s*[a-zA-Z0-9-]+=[^;]+)*$/i;
+
+export interface FieldError {
+	/** TypeBox path, e.g. "/email" — matched against VALIDATION_MESSAGES. */
+	path: string;
+	message: string;
+}
+
+/** Thrown by `validateJson` when the JSON body fails its TypeBox schema. */
+export class ValidationFailed extends Error {
+	constructor(readonly errors: FieldError[]) {
+		super("Request validation failed");
+		this.name = "ValidationFailed";
+	}
+}
+
+/** Parse + validate a JSON body against `schema`. The handler's
+ *  `c.req.valid("json")` is typed as the schema's static type. */
+export const validateJson = <T extends TSchema>(schema: T) =>
+	createMiddleware<
+		AppEnv,
+		string,
+		{ in: { json: Static<T> }; out: { json: Static<T> } }
+	>(async (c, next) => {
+		let value: unknown = {};
+		const contentType = c.req.header("content-type") ?? "";
+		if (JSON_CONTENT_TYPE.test(contentType)) {
+			try {
+				value = await c.req.json();
+			} catch {
+				throw new HTTPException(400, {
+					message: "Malformed JSON in request body",
+				});
+			}
+		}
+		if (Value.Check(schema, value)) {
+			c.req.addValidatedData("json", value as Static<T> as {});
+			await next();
+			return;
+		}
+		throw new ValidationFailed(
+			[...Value.Errors(schema, value)].map((e) => ({
+				path: e.path,
+				message: e.message,
+			})),
+		);
+	});
+
+// ---------------------------------------------------------------------------
+// TypeBox Schemas for Fase 2 Report Creation & Tracking Validation
+// ---------------------------------------------------------------------------
+
+export const ReportCreateSchema = Type.Object({
+	jenis: Type.Optional(Type.String()),
+	kategori: Type.Optional(Type.String()),
+	title: Type.String({ minLength: 10, maxLength: 150 }),
+	chronology: Type.String({ minLength: 50 }),
+	eventDate: Type.Optional(Type.String()),
+	location: Type.Optional(Type.String()),
+	parties: Type.Optional(Type.String()),
+	isAnonymous: Type.Optional(Type.Union([Type.Boolean(), Type.String()])),
+	reporterName: Type.Optional(Type.String()),
+	reporterEmail: Type.Optional(Type.String()),
+	reporterPhone: Type.Optional(Type.String()),
+});
+
+export type ReportCreateInput = Static<typeof ReportCreateSchema>;
+
+export const ReportTrackSchema = Type.Object({
+	ticketNumber: Type.String({ minLength: 10 }),
+	secretCode: Type.String({ minLength: 8 }),
+});
+
+export type ReportTrackInput = Static<typeof ReportTrackSchema>;

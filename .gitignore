@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data/*.sqlite*
+data/*.db
+data/uploads/
+.playwright-mcp/
+*.png
+.llm-wiki/meta/
+

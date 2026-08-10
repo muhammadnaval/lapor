@@ -1,0 +1,939 @@
+/* ---------------------------------------------------------------------------
+   Lapor.css: Co-located styling for F02 Form Pelaporan (MTsN 3 Kota Padang)
+--------------------------------------------------------------------------- */
+
+.lapor-wrapper {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: var(--bg);
+	color: var(--text);
+}
+
+.lapor-container {
+	max-width: 920px;
+	margin: 0 auto;
+	padding: 2.5rem 1.5rem 4rem;
+	width: 100%;
+	flex: 1;
+}
+
+.lapor-header {
+	text-align: center;
+	margin-bottom: 2.5rem;
+}
+
+.lapor-title {
+	font-size: 2.1rem;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem;
+	color: var(--text);
+}
+
+.lapor-sub {
+	font-size: 1.02rem;
+	color: var(--muted);
+	margin: 0;
+}
+
+/* --- Stepper Header --- */
+
+.stepper-nav {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 0.75rem;
+	margin-bottom: 2.5rem;
+}
+
+.step-pill {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 0.85rem 0.75rem;
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+	cursor: pointer;
+	transition: background 150ms ease, border-color 150ms ease, transform 100ms ease;
+	user-select: none;
+}
+
+.step-pill:hover {
+	border-color: var(--primary);
+}
+
+.step-pill-active {
+	border-color: var(--primary);
+	background: var(--primary-soft);
+}
+
+.step-pill-complete {
+	border-color: var(--primary);
+}
+
+.step-pill-num {
+	width: 28px;
+	height: 28px;
+	border-radius: 999px;
+	background: var(--border);
+	color: var(--text);
+	font-weight: 700;
+	font-size: 0.85rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.step-pill-active .step-pill-num,
+.step-pill-complete .step-pill-num {
+	background: var(--primary);
+	color: #ffffff;
+}
+
+.step-pill-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.step-pill-label {
+	font-size: 0.84rem;
+	font-weight: 700;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.step-pill-sub {
+	font-size: 0.72rem;
+	color: var(--muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* --- Form Card Container --- */
+
+.lapor-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 2.25rem;
+	box-shadow: var(--shadow);
+}
+
+.step-title {
+	font-size: 1.35rem;
+	font-weight: 700;
+	margin: 0 0 0.5rem;
+	color: var(--text);
+}
+
+.step-desc {
+	font-size: 0.94rem;
+	color: var(--muted);
+	margin: 0 0 1.75rem;
+	line-height: 1.5;
+}
+
+/* --- Step 1: Option Cards --- */
+
+.identity-cards-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+	margin-bottom: 2rem;
+}
+
+.identity-card {
+	border: 2px solid var(--border);
+	border-radius: 14px;
+	padding: 1.5rem;
+	cursor: pointer;
+	background: var(--bg);
+	transition: border-color 150ms ease, background 150ms ease;
+}
+
+.identity-card:hover {
+	border-color: var(--primary);
+}
+
+.identity-card-selected {
+	border-color: var(--primary);
+	background: var(--primary-soft);
+}
+
+.identity-card-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 0.75rem;
+}
+
+.identity-card-title {
+	font-weight: 700;
+	font-size: 1.05rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.identity-card-desc {
+	font-size: 0.88rem;
+	color: var(--muted);
+	line-height: 1.5;
+	margin: 0;
+}
+
+.identity-form-fields {
+	margin-top: 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--border);
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* --- Form Input Fields --- */
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.form-label {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--text);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.form-req {
+	color: var(--danger);
+	margin-left: 0.25rem;
+}
+
+.form-opt {
+	font-size: 0.78rem;
+	color: var(--muted);
+	font-weight: 400;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+	width: 100%;
+	padding: 0.65rem 0.85rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--bg);
+	color: var(--text);
+	font: inherit;
+	font-size: 0.92rem;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+	outline: none;
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.form-textarea {
+	min-height: 140px;
+	resize: vertical;
+}
+
+.form-error-msg {
+	font-size: 0.82rem;
+	color: var(--danger);
+	font-weight: 500;
+}
+
+.char-counter {
+	font-size: 0.78rem;
+	color: var(--muted);
+	text-align: right;
+}
+
+/* --- Step 3: Enhanced Evidence Upload Section --- */
+
+.evidence-tip-box {
+	background: var(--primary-soft);
+	border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+	border-radius: 12px;
+	padding: 1.15rem 1.25rem;
+	margin-bottom: 1.75rem;
+	display: flex;
+	align-items: flex-start;
+	gap: 0.85rem;
+}
+
+.evidence-tip-icon {
+	width: 28px;
+	height: 28px;
+	border-radius: 999px;
+	background: var(--primary);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 0.85rem;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+.evidence-tip-content {
+	font-size: 0.88rem;
+	line-height: 1.5;
+	color: var(--text);
+}
+
+.evidence-tip-title {
+	font-weight: 700;
+	margin-bottom: 0.25rem;
+}
+
+.dropzone-container {
+	border: 2px dashed var(--border);
+	border-radius: 16px;
+	padding: 2.75rem 1.75rem;
+	text-align: center;
+	background: color-mix(in srgb, var(--bg) 60%, var(--surface));
+	cursor: pointer;
+	transition: border-color 180ms ease, background 180ms ease, transform 120ms ease;
+	margin-bottom: 1.75rem;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.dropzone-container:hover,
+.dropzone-container-active {
+	border-color: var(--primary);
+	background: var(--primary-soft);
+	transform: translateY(-2px);
+}
+
+.dropzone-cloud-icon {
+	width: 56px;
+	height: 56px;
+	border-radius: 16px;
+	background: var(--primary-soft);
+	color: var(--primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 1rem;
+	box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.dropzone-headline {
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--text);
+	margin-bottom: 0.35rem;
+}
+
+.dropzone-subtext {
+	font-size: 0.84rem;
+	color: var(--muted);
+	margin: 0 0 1.25rem;
+	max-width: 480px;
+}
+
+.format-pills-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.format-pill {
+	font-size: 0.74rem;
+	font-weight: 700;
+	padding: 0.2rem 0.55rem;
+	border-radius: 6px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--muted);
+	letter-spacing: 0.03em;
+}
+
+/* File Upload List Card */
+
+.uploaded-section-title {
+	font-size: 1rem;
+	font-weight: 700;
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.file-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+}
+
+.file-card-item {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 1rem 1.15rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.25rem;
+	box-shadow: var(--shadow);
+	transition: border-color 150ms ease;
+}
+
+.file-card-item:hover {
+	border-color: var(--primary);
+}
+
+.file-card-left {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	min-width: 0;
+	flex: 1;
+}
+
+.file-type-badge {
+	width: 42px;
+	height: 42px;
+	border-radius: 10px;
+	background: var(--primary-soft);
+	color: var(--primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.file-card-meta {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.file-card-name {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.file-card-details {
+	font-size: 0.78rem;
+	color: var(--muted);
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.15rem;
+}
+
+.file-status-tag {
+	color: var(--primary);
+	font-weight: 600;
+}
+
+.file-card-right {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-shrink: 0;
+}
+
+.file-remove-button {
+	background: transparent;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	color: var(--muted);
+	cursor: pointer;
+	padding: 0.4rem 0.6rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.file-remove-button:hover {
+	color: var(--danger);
+	border-color: var(--danger);
+	background: #fef2f2;
+}
+
+[data-theme="dark"] .file-remove-button:hover {
+	background: #450a0a;
+}
+
+/* --- Step 4: Preview Summary --- */
+
+.preview-box {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-bottom: 1.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.preview-row {
+	display: grid;
+	grid-template-columns: 200px 1fr;
+	gap: 1rem;
+	font-size: 0.9rem;
+}
+
+.preview-label {
+	font-weight: 600;
+	color: var(--muted);
+}
+
+.preview-val {
+	color: var(--text);
+	word-break: break-word;
+}
+
+.captcha-box {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 1.25rem;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.captcha-question {
+	font-weight: 700;
+	font-size: 0.98rem;
+	white-space: nowrap;
+}
+
+.agreement-check {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	font-size: 0.88rem;
+	color: var(--text);
+	cursor: pointer;
+	margin-bottom: 2rem;
+}
+
+.agreement-check input {
+	margin-top: 3px;
+	width: 18px;
+	height: 18px;
+	accent-color: var(--primary);
+	cursor: pointer;
+}
+
+/* --- Action Buttons --- */
+
+.form-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--border);
+}
+
+/* --- Success Screen Modal --- */
+
+.success-screen {
+	text-align: center;
+	padding: 1rem 0;
+}
+
+.success-icon-wrap {
+	width: 72px;
+	height: 72px;
+	border-radius: 999px;
+	background: var(--primary-soft);
+	color: var(--primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.25rem;
+	margin: 0 auto 1.25rem;
+}
+
+.success-title {
+	font-size: 1.8rem;
+	font-weight: 800;
+	margin: 0 0 0.5rem;
+}
+
+.success-desc {
+	font-size: 1.02rem;
+	color: var(--muted);
+	margin: 0 0 2rem;
+}
+
+.ticket-code-card {
+	background: linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 100%);
+	border: 2px dashed var(--primary);
+	border-radius: 16px;
+	padding: 1.75rem;
+	margin-bottom: 2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.ticket-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.ticket-field-label {
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--muted);
+}
+
+.ticket-field-val {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: var(--primary);
+	letter-spacing: 0.05em;
+}
+
+.code-warning {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	color: #991b1b;
+	padding: 0.85rem 1rem;
+	border-radius: 10px;
+	font-size: 0.86rem;
+	font-weight: 600;
+}
+
+[data-theme="dark"] .code-warning {
+	background: #450a0a;
+	border-color: #7f1d1d;
+	color: #fca5a5;
+}
+
+.success-actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+/* --- Responsive Layout --- */
+
+@media (max-width: 768px) {
+	.stepper-nav {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.identity-cards-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.preview-row {
+		grid-template-columns: 1fr;
+		gap: 0.25rem;
+	}
+
+	.lapor-card {
+		padding: 1.5rem;
+	}
+
+	.captcha-box {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.file-card-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.file-card-right {
+		width: 100%;
+		justify-content: flex-end;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   @media print: Printable Official Proof Document (Tanda Terima Laporan)
+--------------------------------------------------------------------------- */
+
+#print-proof-section {
+	display: none;
+}
+
+@media print {
+	@page {
+		size: A4 portrait;
+		margin: 12mm 15mm 15mm 15mm;
+	}
+
+	*, *::before, *::after {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		box-sizing: border-box !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
+		outline: none !important;
+	}
+
+	html, body, :root, [data-theme], [data-theme="dark"] {
+		background: #ffffff !important;
+		background-color: #ffffff !important;
+		color: #000000 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		font-size: 9.5pt !important;
+		font-family: Arial, Helvetica, sans-serif !important;
+		line-height: 1.4 !important;
+		border: none !important;
+		box-shadow: none !important;
+		margin: 8mm 12mm !important;
+	}
+
+	html, body {
+		height: 100% !important;
+		overflow: hidden !important;
+		background: #ffffff !important;
+		color: #000000 !important;
+	}
+
+	.lapor-wrapper,
+	.pub-footer,
+	nav,
+	header,
+	footer,
+	.btn,
+	[class*="navbar"],
+	[class*="header"] {
+		display: none !important;
+	}
+
+	body > #print-proof-section,
+	#print-proof-section,
+	#print-proof-section * {
+		visibility: visible !important;
+	}
+
+	#print-proof-section {
+		display: block !important;
+		position: absolute !important;
+		left: 0 !important;
+		top: 0 !important;
+		width: 100% !important;
+		max-height: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		background: #ffffff !important;
+		color: #000000 !important;
+		box-sizing: border-box !important;
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+	}
+
+	.print-header {
+		text-align: center !important;
+		margin-bottom: 8pt !important;
+	}
+
+	.print-kop-title {
+		font-size: 10pt !important;
+		font-weight: bold !important;
+		letter-spacing: 0.04em !important;
+	}
+
+	.print-kop-sub {
+		font-size: 9pt !important;
+		font-weight: bold !important;
+	}
+
+	.print-kop-name {
+		font-size: 12pt !important;
+		font-weight: bold !important;
+		color: #000000 !important;
+		margin: 1pt 0 !important;
+	}
+
+	.print-kop-address {
+		font-size: 7.5pt !important;
+		color: #333333 !important;
+	}
+
+	.print-kop-divider {
+		border-bottom: 1.5pt solid #000000 !important;
+		border-top: 0.5pt solid #000000 !important;
+		height: 1.5pt !important;
+		margin-top: 4pt !important;
+		margin-bottom: 8pt !important;
+	}
+
+	.print-doc-title {
+		text-align: center !important;
+		margin-bottom: 8pt !important;
+	}
+
+	.print-doc-title h2 {
+		font-size: 11pt !important;
+		font-weight: bold !important;
+		text-transform: uppercase !important;
+		margin: 0 0 1pt !important;
+		text-decoration: underline !important;
+	}
+
+	.print-doc-title p {
+		font-size: 8pt !important;
+		color: #444444 !important;
+		margin: 0 !important;
+	}
+
+	.print-code-box {
+		display: flex !important;
+		justify-content: space-around !important;
+		background: #f8fafc !important;
+		border: 1pt solid #1e293b !important;
+		border-radius: 4pt !important;
+		padding: 6pt 8pt !important;
+		margin-bottom: 8pt !important;
+	}
+
+	.print-code-item {
+		text-align: center !important;
+	}
+
+	.print-code-label {
+		font-size: 7pt !important;
+		font-weight: bold !important;
+		color: #475569 !important;
+		display: block !important;
+		margin-bottom: 1pt !important;
+	}
+
+	.print-code-value {
+		font-family: monospace !important;
+		font-size: 11.5pt !important;
+		font-weight: bold !important;
+		color: #0f172a !important;
+		letter-spacing: 0.04em !important;
+	}
+
+	.print-table {
+		width: 100% !important;
+		border-collapse: collapse !important;
+		margin-bottom: 8pt !important;
+		display: table !important;
+	}
+
+	.print-table tr {
+		display: table-row !important;
+	}
+
+	.print-table th,
+	.print-table td {
+		border: 0.75pt solid #cbd5e1 !important;
+		padding: 4pt 6pt !important;
+		font-size: 8.5pt !important;
+		line-height: 1.3 !important;
+		text-align: left !important;
+		vertical-align: top !important;
+		display: table-cell !important;
+	}
+
+	.print-table th {
+		background: #f1f5f9 !important;
+		width: 26% !important;
+		font-weight: bold !important;
+	}
+
+	.print-notice {
+		background: #fefce8 !important;
+		border: 0.75pt solid #fef08a !important;
+		padding: 5pt 8pt !important;
+		border-radius: 3pt !important;
+		font-size: 7.5pt !important;
+		line-height: 1.3 !important;
+		margin-bottom: 8pt !important;
+	}
+
+	.print-notice p {
+		margin: 2pt 0 0 !important;
+	}
+
+	.print-signature-block {
+		display: flex !important;
+		justify-content: flex-end !important;
+		margin-top: 6pt !important;
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+	}
+
+	.print-sig-col {
+		text-align: center !important;
+		width: 160pt !important;
+	}
+
+	.print-sig-col p {
+		margin: 0 !important;
+		font-size: 8pt !important;
+	}
+
+	.print-qr-wrapper {
+		display: flex !important;
+		flex-direction: column !important;
+		align-items: center !important;
+		justify-content: center !important;
+		border: 1pt solid #0f172a !important;
+		padding: 4pt !important;
+		background: #ffffff !important;
+		margin: 4pt auto !important;
+		border-radius: 4pt !important;
+		width: 90pt !important;
+	}
+
+	.print-qr-wrapper svg {
+		width: 75px !important;
+		height: 75px !important;
+	}
+
+	.print-qr-caption {
+		font-size: 6.5pt !important;
+		font-weight: bold !important;
+		color: #1e293b !important;
+		margin-top: 3pt !important;
+		text-align: center !important;
+		font-family: monospace !important;
+		line-height: 1.2 !important;
+	}
+}

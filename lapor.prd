@@ -1,0 +1,400 @@
+## 1. Ringkasan produk
+
+**Nama kerja:** LAPOR MTsN 3 Kota Padang  
+
+**Tujuan:** menyediakan kanal pelaporan resmi, aman, mudah digunakan, dapat dilacak, dan dapat dipertanggungjawabkan bagi warga madrasah serta masyarakat.
+
+**Stack:** Dulak — Bun, Hono, `bun:sqlite`, Inertia v3 SSR, TypeScript, migrasi SQL, autentikasi, unggahan, pengujian, dan Docker.  
+
+**Domain lokal:** http://localhost:4000  
+
+**Domain produksi:** https://lapor.mtsn3padang.sch.id  
+
+**Folder proyek:** `/home/naval/www/lapor`  
+
+**Bahasa antarmuka:** Bahasa Indonesia  
+
+**Zona waktu:** `Asia/Jakarta`
+
+### Sasaran
+
+- Pelapor dapat mengirim laporan dalam ≤5 menit melalui perangkat seluler.
+- Setiap laporan memperoleh kode pelacakan unik.
+- Petugas dapat melakukan triase, disposisi, komunikasi, tindak lanjut, dan penutupan laporan.
+- Identitas serta bukti pelapor terlindungi sesuai peran dan kebutuhan penanganan.
+- Pimpinan memperoleh ringkasan kinerja tanpa membuka data sensitif yang tidak diperlukan.
+
+### Di luar cakupan MVP
+
+- Aplikasi mobile native.
+- Integrasi SSO Kemenag/EMIS.
+- Chat real-time.
+- Analisis AI otomatis atas isi laporan.
+- Integrasi lintas instansi secara otomatis.
+
+## 2. Pengguna dan peran
+
+| Peran | Kebutuhan utama | Akses |
+| --- | --- | --- |
+| Pelapor anonim | Mengirim dan melacak tanpa akun | Form publik, kode pelacakan, kotak pesan aman |
+| Pelapor teridentifikasi | Mendapat pembaruan lebih mudah | Form publik, kontak opsional/akun bila diaktifkan |
+| Petugas triase | Memvalidasi dan mengklasifikasikan | Antrean laporan, verifikasi awal, disposisi |
+| Penindak lanjut | Menangani laporan yang ditugaskan | Detail terbatas, catatan, bukti, perubahan status |
+| Admin | Mengelola sistem dan akses | Pengguna, peran, kategori, SLA, audit |
+| Pimpinan | Memantau kinerja dan risiko | Dasbor agregat dan laporan statistik |
+
+## 3. Jenis pelaporan
+
+### 3.1 Whistleblowing
+
+Untuk dugaan pelanggaran internal, fraud, korupsi, konflik kepentingan, penyalahgunaan wewenang, perundungan, kekerasan, atau pelanggaran kode etik.
+
+**Karakteristik:** kerahasiaan tinggi, opsi anonim, pembatasan akses berbasis kasus, perlindungan identitas, dan audit akses.
+
+### 3.2 Pengaduan masyarakat
+
+Untuk keluhan mengenai layanan, fasilitas, perilaku petugas, administrasi, pembelajaran, sarana-prasarana, dan pengalaman masyarakat terhadap layanan madrasah.
+
+**Karakteristik:** kategori layanan, SLA respons, komunikasi dua arah, dan survei kepuasan setelah selesai.
+
+### 3.3 Jenis pelaporan ketiga — TBD
+
+Struktur sistem harus bersifat configurable agar jenis ketiga dapat ditambahkan tanpa mengubah alur inti. Kandidat tidak boleh diputuskan tanpa konfirmasi pemilik produk.
+
+## 4. Alur utama
+
+1. Pelapor memilih jenis laporan.
+2. Sistem menjelaskan ruang lingkup, privasi, dan kondisi darurat.
+3. Pelapor memilih anonim atau mencantumkan identitas/kontak.
+4. Pelapor mengisi detail, lokasi/waktu kejadian, pihak terkait, dan mengunggah bukti.
+5. Sistem menampilkan pratinjau dan persetujuan pernyataan kebenaran.
+6. Setelah terkirim, sistem membuat nomor laporan dan kode rahasia pelacakan.
+7. Petugas melakukan triase: cek kelengkapan, duplikasi, kewenangan, tingkat risiko, dan prioritas.
+8. Laporan didisposisikan kepada penindak lanjut dengan tenggat/SLA.
+9. Pelapor dan petugas berkomunikasi melalui kotak pesan kasus tanpa membocorkan identitas anonim.
+10. Petugas mencatat tindakan dan hasil, kemudian menyelesaikan laporan.
+11. Pelapor dapat memberi umpan balik; sistem menyimpan jejak audit.
+
+### Status laporan
+
+`Draf` → `Terkirim` → `Verifikasi Awal` → `Perlu Informasi` / `Ditolak` / `Diteruskan` → `Dalam Penanganan` → `Selesai` → `Ditutup`
+
+Status opsional: `Dibuka Kembali`, `Dialihkan`, `Duplikat`.
+
+## 5. Fitur dan subfitur
+
+### F01 — Portal publik
+
+- Halaman beranda dan penjelasan kanal.
+- Pemilihan jenis laporan.
+- Panduan laporan yang dapat/tidak dapat diproses.
+- Informasi privasi, perlindungan pelapor, dan kondisi darurat.
+- FAQ serta kontak resmi madrasah.
+- Desain responsif dan aksesibel.
+
+### F02 — Form pelaporan
+
+- Form bertahap sesuai jenis laporan.
+- Pilihan anonim/teridentifikasi.
+- Data kejadian: judul, kronologi, tanggal, lokasi, kategori, pihak terkait.
+- Unggah bukti dengan progres, validasi tipe/ukuran, dan kemampuan melanjutkan unggahan.
+- Pratinjau, persetujuan, pencegahan pengiriman ganda.
+- CAPTCHA/honeypot dan rate limiting.
+
+### F03 — Pelacakan laporan
+
+- Nomor laporan dan kode rahasia sekali tampil.
+- Pencarian laporan tanpa login menggunakan nomor + kode.
+- Linimasa status yang aman untuk pelapor.
+- Kotak pesan kasus dan permintaan informasi tambahan.
+- Unggah bukti tambahan.
+- Notifikasi email opsional tanpa membocorkan materi sensitif.
+
+### F04 — Antrean dan triase
+
+- Daftar laporan dengan filter jenis, kategori, status, prioritas, petugas, dan SLA.
+- Pencarian nomor/judul/kata kunci.
+- Penilaian kelengkapan, risiko, urgensi, dan kewenangan.
+- Deteksi/penandaan duplikat secara manual.
+- Disposisi, pengalihan, penolakan dengan alasan, dan permintaan informasi.
+- Tampilan identitas tersamarkan secara default.
+
+### F05 — Manajemen kasus
+
+- Detail laporan, bukti, catatan internal, pesan pelapor, dan linimasa.
+- Penugasan petugas dan tenggat.
+- Checklist tindak lanjut.
+- Catatan internal terpisah dari pesan untuk pelapor.
+- Keputusan, ringkasan hasil, dan lampiran hasil.
+- Pembukaan kembali dengan alasan.
+
+### F06 — Keamanan whistleblowing
+
+- Identitas anonim tidak wajib dikumpulkan.
+- Identitas teridentifikasi dipisahkan secara logis dari isi kasus.
+- Hak “lihat identitas” sebagai izin khusus.
+- Pencatatan setiap akses identitas dan unduhan bukti.
+- Redaksi data sensitif sebelum diteruskan.
+- Ekspor aman dengan watermark dan alasan ekspor.
+
+### F07 — Notifikasi
+
+- Notifikasi laporan diterima, perubahan status, permintaan informasi, mendekati SLA, dan lewat SLA.
+- Template Bahasa Indonesia.
+- Preferensi kanal dan frekuensi.
+- Tidak menampilkan kronologi/bukti sensitif di subjek atau badan notifikasi.
+
+### F08 — Dasbor dan pelaporan
+
+- Total laporan berdasarkan jenis, kategori, status, prioritas, dan periode.
+- Waktu respons pertama, waktu penyelesaian, kepatuhan SLA, backlog, dan laporan dibuka kembali.
+- Tren bulanan dan kategori dominan.
+- Ekspor CSV dengan kontrol akses.
+- Statistik agregat tanpa identitas pelapor.
+
+### F09 — Administrasi
+
+- Pengguna, peran, dan izin.
+- Kategori, jenis laporan, prioritas, SLA, unit tujuan, alasan penolakan, dan template notifikasi.
+- Hari/jam kerja serta hari libur untuk perhitungan SLA.
+- Pengaturan branding, informasi kontak, kebijakan privasi, dan retensi.
+- Audit log dan sesi pengguna.
+
+## 6. Spesifikasi fungsional
+
+### Aturan nomor laporan
+
+Format yang disarankan: `LPR-YYYYMM-XXXXXX`, dibuat secara acak dan tidak berurutan agar volume laporan tidak mudah ditebak.
+
+### Prioritas
+
+| Prioritas | Contoh | Respons awal | Target penanganan |
+| --- | --- | --- | --- |
+| Kritis | Ancaman keselamatan/kekerasan aktif | ≤2 jam kerja | Eskalasi segera |
+| Tinggi | Fraud, kekerasan, pelanggaran berat | ≤1 hari kerja | ≤5 hari kerja |
+| Sedang | Gangguan layanan signifikan | ≤2 hari kerja | ≤10 hari kerja |
+| Rendah | Saran/keluhan minor | ≤3 hari kerja | ≤15 hari kerja |
+
+SLA final harus disahkan pemilik proses dan dapat dikonfigurasi admin.
+
+### Validasi form
+
+- Judul 10–150 karakter.
+- Kronologi minimum 50 karakter.
+- Tanggal kejadian tidak boleh melebihi waktu sekarang.
+- Kontak wajib hanya jika pelapor memilih menerima notifikasi melalui kanal tersebut.
+- Berkas diizinkan: PDF, JPG, PNG, MP4, MP3, DOCX; batas awal 25 MB/berkas dan 100 MB/laporan.
+- Nama file dinormalisasi; MIME diperiksa dari isi, bukan hanya ekstensi.
+
+### Matriks akses ringkas
+
+| Kemampuan | Pelapor | Triase | Penindak lanjut | Admin | Pimpinan |
+| --- | --- | --- | --- | --- | --- |
+| Buat/lacak laporan | ✓ | — | — | — | — |
+| Lihat antrean | — | ✓ | Terbatas | ✓ | Agregat |
+| Lihat identitas | Milik sendiri | Izin khusus | Izin khusus | Izin khusus | — |
+| Ubah status | — | ✓ | Kasus tugas | ✓ | — |
+| Catatan internal | — | ✓ | ✓ | ✓ | — |
+| Kelola konfigurasi | — | — | — | ✓ | — |
+
+## 7. Model data awal
+
+- `users`: akun petugas/admin.
+- `roles`, `permissions`, `user_roles`: RBAC.
+- `report_types`: jenis laporan configurable.
+- `categories`: kategori per jenis laporan.
+- `reports`: nomor, judul, kronologi, jenis, kategori, status, prioritas, waktu kejadian, lokasi, kanal, SLA.
+- `reporter_identities`: identitas/kontak terenkripsi dan dipisahkan dari kasus.
+- `report_access_codes`: hash kode pelacakan, percobaan gagal, kedaluwarsa opsional.
+- `attachments`: metadata, lokasi penyimpanan, checksum, MIME, ukuran, pemilik.
+- `assignments`: petugas/unit, waktu penugasan, tenggat.
+- `messages`: komunikasi pelapor–petugas.
+- `internal_notes`: catatan yang tidak terlihat pelapor.
+- `status_history`: perubahan status dan alasan.
+- `case_actions`: tindakan/checklist tindak lanjut.
+- `notifications`: antrean, kanal, status kirim.
+- `audit_logs`: aktor, aksi, objek, waktu, IP, user-agent, alasan.
+- `settings`, `holidays`: konfigurasi dan kalender SLA.
+
+Semua timestamp disimpan sebagai UTC dan ditampilkan dalam `Asia/Jakarta`.
+
+## 8. Rute dan endpoint awal
+
+### Publik
+
+- `GET /`
+- `GET /lapor`
+- `GET /lapor/:jenis`
+- `POST /lapor`
+- `GET /lacak`
+- `POST /lacak`
+- `GET /lacak/:nomor`
+- `POST /lacak/:nomor/pesan`
+- `POST /lacak/:nomor/lampiran`
+
+### Petugas
+
+- `GET /admin/laporan`
+- `GET /admin/laporan/:id`
+- `POST /admin/laporan/:id/triase`
+- `POST /admin/laporan/:id/tugaskan`
+- `POST /admin/laporan/:id/status`
+- `POST /admin/laporan/:id/catatan`
+- `POST /admin/laporan/:id/pesan`
+- `POST /admin/laporan/:id/tutup`
+- `GET /admin/dasbor`
+- `GET /admin/audit`
+- `GET|POST /admin/pengaturan/*`
+
+Semua mutasi harus memakai validasi TypeBox, prepared statement, pemeriksaan otorisasi, CSRF, dan audit log.
+
+## 9. Spesifikasi nonfungsional
+
+### Keamanan dan privasi
+
+- Argon2id dan sesi berbasis database dari Dulak.
+- CSRF origin check, security headers, rate limiting, dan prepared statements.
+- TLS wajib di produksi; cookie `Secure`, `HttpOnly`, `SameSite=Lax/Strict` sesuai alur.
+- Enkripsi data identitas sensitif di tingkat aplikasi dengan kunci dari secret manager/env.
+- Kode pelacakan hanya disimpan dalam bentuk hash.
+- Bukti disimpan di luar web root; akses memakai otorisasi dan URL singkat/stream terkontrol.
+- Backup terenkripsi dan uji pemulihan berkala.
+- Retensi, penghapusan, dan dasar pemrosesan data harus disahkan madrasah.
+
+### Kinerja dan keandalan
+
+- LCP halaman publik target <2,5 detik pada koneksi seluler wajar.
+- Respons p95 untuk operasi non-unggahan <500 ms pada beban normal.
+- Proses unggahan dapat dilanjutkan dan memiliki checksum.
+- Health check, graceful shutdown, logging terstruktur, rotasi log, dan pemantauan ruang disk.
+- Target ketersediaan awal 99,5% per bulan.
+
+### Aksesibilitas dan UX
+
+- Target WCAG 2.1 AA.
+- Semua form dapat digunakan dengan keyboard dan screen reader.
+- Pesan galat menjelaskan tindakan perbaikan.
+- Warna bukan satu-satunya penanda status.
+- Bahasa formal, ringkas, tidak menyalahkan pelapor.
+
+## 10. Kriteria penerimaan MVP
+
+- Pengguna dapat mengirim laporan anonim dan teridentifikasi untuk dua jenis yang telah dikonfirmasi.
+- Sistem menghasilkan nomor dan kode pelacakan yang tidak dapat ditebak.
+- Pelapor dapat melihat status serta membalas permintaan informasi tanpa akun.
+- Petugas dapat melakukan triase, menugaskan, memberi catatan, mengirim pesan, dan menutup kasus.
+- Akses identitas whistleblower terbatas serta tercatat di audit log.
+- SLA dihitung dalam zona `Asia/Jakarta`.
+- Dasbor menampilkan metrik agregat dan tidak membocorkan identitas.
+- Seluruh alur kritis memiliki pengujian integrasi/E2E.
+- Aplikasi lulus pemeriksaan aksesibilitas dasar, keamanan dependency, backup, dan pemulihan.
+
+## 11. Task implementasi
+
+### Fase 0 — Konfirmasi produk dan fondasi
+
+- [ ]  Tetapkan pemilik proses, petugas triase, penindak lanjut, dan matriks eskalasi.
+- [ ]  Sahkan kategori, prioritas, SLA, retensi, kebijakan anonim, dan jenis bukti.
+- [ ]  Verifikasi template Dulak/framework UI yang digunakan proyek.
+- [ ]  Petakan konfigurasi `.env` lokal dan produksi tanpa menyalin secret ke dokumentasi.
+- [ ]  Tetapkan definisi selesai, strategi branch, CI, staging, backup, dan rollback.
+
+### Fase 1 — Skema dan keamanan
+
+- [ ]  Buat migrasi tabel inti, indeks, foreign key, dan seed konfigurasi.
+- [ ]  Implementasikan RBAC dan permission `view_reporter_identity`.
+- [ ]  Implementasikan generator nomor laporan dan kode rahasia; simpan kode sebagai hash.
+- [ ]  Implementasikan enkripsi identitas dan pemisahan data identitas.
+- [ ]  Implementasikan service audit log.
+- [ ]  Tambahkan rate limit untuk kirim laporan dan pelacakan.
+- [ ]  Tulis unit test untuk state machine, SLA, nomor laporan, dan otorisasi.
+
+### Fase 2 — Portal dan pengiriman laporan
+
+- [ ]  Buat layout publik, beranda, panduan, privasi, FAQ, dan kontak.
+- [ ]  Buat pemilih jenis laporan dan form bertahap.
+- [ ]  Implementasikan validasi TypeBox server/client.
+- [ ]  Integrasikan resumable upload Dulak, checksum, pembatasan MIME/ukuran, dan penyimpanan aman.
+- [ ]  Buat halaman pratinjau dan konfirmasi.
+- [ ]  Buat halaman sukses dengan nomor dan kode sekali tampil serta tombol cetak/salin.
+- [ ]  Tulis E2E anonim, teridentifikasi, validasi, rate limit, dan unggahan gagal/lanjut.
+
+### Fase 3 — Pelacakan dan komunikasi
+
+- [ ]  Buat autentikasi pelacakan nomor + kode dengan lockout bertahap.
+- [ ]  Buat linimasa status aman untuk pelapor.
+- [ ]  Buat pesan dua arah dan permintaan informasi.
+- [ ]  Dukung unggahan bukti tambahan.
+- [ ]  Buat notifikasi email minimal dan template aman.
+- [ ]  Tulis E2E pelacakan, pesan, bukti tambahan, serta kode salah/kedaluwarsa.
+
+### Fase 4 — Backoffice dan penanganan
+
+- [ ]  Buat antrean laporan, filter, pencarian, pagination, dan indikator SLA.
+- [ ]  Buat detail kasus dengan tab ringkasan, bukti, pesan, catatan, tindakan, dan audit.
+- [ ]  Buat triase, prioritas, disposisi, pengalihan, penolakan, duplikat, dan penugasan.
+- [ ]  Buat state transition guard untuk setiap perubahan status.
+- [ ]  Implementasikan redaksi identitas dan akses identitas dengan alasan.
+- [ ]  Buat checklist tindak lanjut, hasil, penutupan, dan pembukaan kembali.
+- [ ]  Tulis E2E hak akses dan keseluruhan lifecycle kasus.
+
+### Fase 5 — Dasbor dan administrasi
+
+- [ ]  Buat metrik ringkasan, tren, backlog, SLA, dan waktu penyelesaian.
+- [ ]  Buat ekspor CSV dengan izin, filter, redaksi, audit, dan batas jumlah data.
+- [ ]  Buat CRUD pengguna/peran, jenis laporan, kategori, SLA, unit, hari libur, serta template.
+- [ ]  Buat tampilan audit log dengan filter.
+- [ ]  Tambahkan survei kepuasan pascapenutupan.
+
+### Fase 6 — Hardening dan rilis
+
+- [ ]  Jalankan lint, type-check, unit, integration, dan E2E pada CI.
+- [ ]  Audit aksesibilitas keyboard, label, fokus, kontras, dan pesan galat.
+- [ ]  Uji keamanan: IDOR, brute force, CSRF, XSS, upload berbahaya, session fixation, dan privilege escalation.
+- [ ]  Uji beban alur kirim/lacak/antrean serta batas penyimpanan SQLite.
+- [ ]  Siapkan Docker produksi, TLS, reverse proxy, volume persisten, log, health check, dan graceful shutdown.
+- [ ]  Siapkan backup terjadwal, verifikasi checksum, serta simulasi restore.
+- [ ]  Buat runbook insiden, SOP penanganan, panduan admin, dan pelatihan petugas.
+- [ ]  Lakukan UAT, perbaiki temuan, buat release candidate, rencana rollback, lalu go-live.
+
+## 12. Prioritas backlog
+
+### P0 — Wajib untuk MVP
+
+Pelaporan anonim/teridentifikasi, unggahan bukti, nomor + kode pelacakan, triase, penugasan, status, pesan dua arah, kontrol identitas, audit, SLA, RBAC, backup, dan E2E alur kritis.
+
+### P1 — Segera setelah MVP
+
+Dasbor lengkap, ekspor, survei kepuasan, template notifikasi configurable, hari libur SLA, duplikat, pembukaan kembali, dan redaksi lanjutan.
+
+### P2 — Pengembangan berikutnya
+
+SSO, integrasi kanal eksternal, PWA, multi-unit lanjutan, analitik risiko, tanda tangan elektronik, dan otomasi klasifikasi setelah tata kelola disetujui.
+
+## 13. Risiko dan mitigasi
+
+| Risiko | Mitigasi |
+| --- | --- |
+| Identitas whistleblower bocor | Pemisahan data, enkripsi, izin khusus, audit akses, redaksi |
+| Kode pelacakan ditebak | Entropi tinggi, hash, rate limit, lockout, respons generik |
+| Bukti berbahaya | Allowlist, inspeksi MIME, penyimpanan terisolasi, pemindaian malware bila tersedia |
+| SLA tidak realistis | Konfigurasi per kategori/prioritas dan validasi bersama pemilik proses |
+| SQLite/penyimpanan penuh | Monitoring disk, backup, retensi lampiran, uji kapasitas, rencana migrasi |
+| Penyalahgunaan laporan anonim | Rate limit, honeypot/CAPTCHA, triase, tanpa menghapus opsi anonim |
+| Notifikasi membocorkan kasus | Template minim data, subjek generik, tautan ke portal aman |
+
+## 14. Keputusan yang perlu dikonfirmasi
+
+- Apa jenis pelaporan ketiga?
+- Apakah pelapor teridentifikasi perlu akun, atau cukup data kontak opsional?
+- Siapa yang boleh melihat identitas whistleblower?
+- Apakah email/WhatsApp akan digunakan untuk notifikasi?
+- Berapa SLA resmi per kategori dan prioritas?
+- Berapa lama laporan, identitas, audit, dan lampiran disimpan?
+- Apakah laporan kritis harus mengirim eskalasi di luar aplikasi?
+- Framework UI Dulak yang dipilih: React, Svelte, atau Vue; Vanilla CSS atau Tailwind?
+- Media penyimpanan lampiran produksi dan kebijakan backup?
+
+## 15. Definition of Done
+
+Sebuah fitur selesai jika acceptance criteria terpenuhi; izin dan audit diterapkan; validasi serta pesan galat tersedia; unit/integration/E2E relevan lulus; aksesibilitas dasar diverifikasi; tidak ada secret di repositori/log; dokumentasi serta migrasi diperbarui; dan fitur lolos review produk, teknis, serta keamanan.
