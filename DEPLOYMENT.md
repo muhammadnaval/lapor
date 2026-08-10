@@ -5,10 +5,26 @@
 
 ---
 
-## 1. Persiapan Lingkungan Produksi (Docker Build)
+## 1. Persiapan Lingkungan Produksi & Inisialisasi Akun Admin
 
-Aplikasi dipaketkan menggunakan Docker Engine multi-stage minimalis:
+### Langkah A: Deployment Langsung via Node/Bun Server (Direct Server)
+```bash
+# 1. Clone repository dari GitHub
+git clone https://github.com/muhammadnaval/lapor.git
+cd lapor
 
+# 2. Install dependensi & build aset client
+bun install
+bun run build
+
+# 3. Jalankan seeding Akun Super Admin Utama (Fresh Database Setup)
+bun run db:seed admin@mtsn3padang.sch.id AdminPadang2026! admin "Super Admin MTsN 3 Kota Padang"
+
+# 4. Jalankan aplikasi dalam mode produksi
+bun run start
+```
+
+### Langkah B: Deployment via Docker Container
 ```bash
 # 1. Build Image Docker Produksi
 docker build -t lapor-mtsn3padang:latest .
@@ -21,6 +37,9 @@ docker run -d \
   --env-file .env \
   --restart unless-stopped \
   lapor-mtsn3padang:latest
+
+# 3. Buat Akun Super Admin Utama di dalam container (Khusus Setup Baru)
+docker exec -it lapor-app bun run db:seed admin@mtsn3padang.sch.id AdminPadang2026! admin "Super Admin MTsN 3 Kota Padang"
 ```
 
 ---

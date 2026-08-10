@@ -149,7 +149,7 @@ the same auth, roles, SSR, and test suite.
 | `bun run build`     | Prebuild client assets → `dist/` (+ `manifest.json`)      |
 | `bun run start`     | Serve prebuilt assets (`NODE_ENV=production`)             |
 | `bun run test`      | E2E suite (auth, roles, reset flow, Inertia protocol, tus) |
-| `bun run db:seed`   | Create a demo user (`[email] [password] [role]` args)     |
+| `bun run db:seed`   | Inisialisasi Akun Super Admin (`bun run db:seed admin@mtsn3padang.sch.id AdminPadang2026! admin "Super Admin MTsN 3 Kota Padang"`) |
 | `bun run typecheck` | `tsc --noEmit`                                            |
 
 ## Features
