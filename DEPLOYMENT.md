@@ -54,19 +54,65 @@ docker exec -it lapor-app bun run db:seed admin@mtsn3padang.sch.id AdminPadang20
 
 ---
 
-## 3. Prosedur Rollback Zero Data Loss
+## 4. Konfigurasi Reverse Proxy Nginx Resmi (SSL Termination)
 
-Jika terjadi kegagalan versi baru di lingkungan produksi:
-```bash
-# 1. Hentikan container bermasalah
-docker stop lapor-app
+Jika menggunakan Nginx sebagai Reverse Proxy di depan aplikasi, pastikan Nginx meneruskan header SSL/HTTPS (`X-Forwarded-Proto` & `X-Forwarded-Host`) agar koneksi Inertia XHR & CSP berjalan 100% sempurna:
 
-# 2. Jalankan versi sebelumnya yang stabil
-docker run -d \
-  --name lapor-app \
-  -p 4000:4000 \
-  -v $(pwd)/data:/app/data \
-  --env-file .env \
-  lapor-mtsn3padang:v1.0.0
+```nginx
+server {
+    listen 80;
+    server_name lapor.mtsn3padang.sch.id;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name lapor.mtsn3padang.sch.id;
+
+    # SSL Certificates (Let's Encrypt / Certbot)
+    ssl_certificate /etc/letsencrypt/live/lapor.mtsn3padang.sch.id/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/lapor.mtsn3padang.sch.id/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+    }
+}
 ```
-*Persistent volume `./data` mempertahankan basis data SQLite dan berkas lampiran secara utuh tanpa kehilangan data.*
+
+---
+
+## 5. Konfigurasi SafeLine WAF (Chaitin SafeLine) sebagai Reverse Proxy & Firewall
+
+Jika Anda menggunakan **SafeLine WAF** sebagai Reverse Proxy & Firewall di depan aplikasi:
+
+### 1. Konfigurasi Situs (Site Management)
+- **Domain**: `lapor.mtsn3padang.sch.id`
+- **Port Layanan**: `443` (SSL / HTTPS)
+- **Upstream Server**: `http://127.0.0.1:4000` (atau IP Container Backend)
+
+### 2. Pengaturan Header Pass-Through (Set Header WAF)
+Di Dasbor SafeLine WAF -> **Site Settings** -> **Custom Request Headers**:
+- Aktifkan **"Host Pass-through"** (`Host: $host`)
+- Tambahkan Header Forwarding:
+  - `X-Forwarded-Proto: https`
+  - `X-Forwarded-Host: lapor.mtsn3padang.sch.id`
+  - `X-Real-IP: $remote_addr`
+
+### 3. Pengaturan Metode HTTP & Protokol Unggahan TUS (`/uploads*`)
+- Di Dasbor SafeLine WAF -> **WAF Rules / Protocol Policy**:
+  - Pastikan HTTP Methods **`PATCH`**, **`HEAD`**, **`OPTIONS`**, **`POST`**, **`DELETE`** diizinkan.
+  - Untuk jalur `/uploads*`, set **Max Body Size** ke **50MB** agar unggahan berkas bukti terlampir via protokol TUS tidak terblokir oleh filter payload WAF.
+
+### 4. Pengaturan `.env` Aplikasi Backend
+Pastikan pada berkas `.env` aplikasi backend di server:
+```ini
+APP_URL=https://lapor.mtsn3padang.sch.id
+```
