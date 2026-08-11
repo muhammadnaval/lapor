@@ -63,18 +63,21 @@ export class Inertia {
 	private get requestUrl(): URL {
 		try {
 			const url = new URL(this.c.request.url);
-			const proto =
-				this.c.headers["x-forwarded-proto"] ||
-				(config.appUrl.startsWith("https") ? "https" : undefined);
+			const referer =
+				this.c.headers["referer"] || this.c.headers["origin"] || "";
+			const isHttps =
+				this.c.headers["x-forwarded-proto"]?.toLowerCase() === "https" ||
+				referer.startsWith("https://") ||
+				config.appUrl.startsWith("https");
+
+			const proto = isHttps ? "https" : "http";
 			const host = this.c.headers["x-forwarded-host"] || this.c.headers.host;
-			if (proto) url.protocol = proto.endsWith(":") ? proto : `${proto}:`;
+			url.protocol = `${proto}:`;
 			if (host) {
 				const parts = host.split(":");
-				const hostname = parts[0];
-				const port = parts[1];
-				if (hostname) url.hostname = hostname;
-				if (port) url.port = port;
-				else if (proto === "https" || !port) url.port = "";
+				if (parts[0]) url.hostname = parts[0];
+				if (parts[1]) url.port = parts[1];
+				else if (isHttps || !parts[1]) url.port = "";
 			}
 			return url;
 		} catch {
@@ -120,10 +123,10 @@ export class Inertia {
 				...pageProps,
 				auth: { user: this.c.user },
 				errors: errors ?? flashErrors ?? {},
+				flash,
 			} as unknown as Page["props"], // core types `errors` as Errors & ErrorBag (intersection)
 			url: this.currentUrl,
 			version: this.assets.version,
-			flash,
 		} as Page;
 	}
 
@@ -188,10 +191,15 @@ export class Inertia {
 
 	/** 303 for redirect-after-write; 302 for plain navigation redirects. */
 	redirect(path: string, status: 302 | 303 = 303): Response {
-		return Response.redirect(
-			new URL(path, this.c.request.url).toString(),
+		const targetUrl = path.startsWith("/")
+			? path
+			: new URL(path, this.requestUrl).toString();
+		return new Response(null, {
 			status,
-		);
+			headers: {
+				Location: targetUrl,
+			},
+		});
 	}
 
 	// -- protocol internals ----------------------------------------------------
@@ -212,10 +220,7 @@ export class Inertia {
 		return new Response(null, {
 			status: 409,
 			headers: {
-				"x-inertia-location": new URL(
-					this.currentUrl,
-					this.c.request.url,
-				).toString(),
+				"x-inertia-location": this.currentUrl,
 				"x-inertia-version": this.assets.version,
 			},
 		});
