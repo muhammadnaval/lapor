@@ -80,9 +80,10 @@ function shutdown(signal: string): void {
 }
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
-// Fail loudly on stray async errors instead of swallowing them; the
-// supervisor (Docker restart policy) brings the process back up.
+// Log stray async errors and keep the server process running 24/7
 process.on("unhandledRejection", (reason) => {
-	console.error("Unhandled promise rejection:", reason);
-	process.exit(1);
+	console.error("[server] Unhandled promise rejection:", reason);
+});
+process.on("uncaughtException", (err) => {
+	console.error("[server] Uncaught exception:", err);
 });

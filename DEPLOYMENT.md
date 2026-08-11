@@ -20,7 +20,15 @@ bun run build
 # 3. Jalankan seeding Akun Super Admin Utama (Fresh Database Setup)
 bun run db:seed admin@mtsn3padang.sch.id AdminPadang2026! admin "Super Admin MTsN 3 Kota Padang"
 
-# 4. Jalankan aplikasi dalam mode produksi
+# 4. Jalankan aplikasi dalam mode produksi (Pilih salah satu metode):
+
+# Opsi 4.1: Via PM2 Process Manager (Rekomendasi Utama)
+npm install -g pm2
+pm2 start "bun run start" --name lapor-app
+pm2 save
+pm2 startup
+
+# Opsi 4.2: Via Bun langsung
 bun run start
 ```
 
