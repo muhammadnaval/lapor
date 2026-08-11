@@ -42,64 +42,75 @@ export const lacakRoutes = () => {
 	});
 
 	app.post("/lacak", trackingLimiter, async (c) => {
-		const ipAddress = c.req.header("x-forwarded-for") || "127.0.0.1";
-		const body = await getBodyData(c);
-		const ticketNumber = ((body["ticketNumber"] as string) || (body["nomor"] as string) || "").trim();
-		const secretCode = ((body["secretCode"] as string) || (body["kode"] as string) || "").trim();
+		try {
+			const rawIp = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "127.0.0.1";
+			const ipAddress = rawIp.split(",")[0]?.trim() || "127.0.0.1";
+			const body = await getBodyData(c);
+			const ticketNumber = ((body["ticketNumber"] as string) || (body["nomor"] as string) || "").trim();
+			const secretCode = ((body["secretCode"] as string) || (body["kode"] as string) || "").trim();
 
-		// Check Lockout Status per IP
-		const lockInfo = FAILED_ATTEMPTS.get(ipAddress);
-		const now = Date.now();
-		if (lockInfo && lockInfo.lockoutUntil > now) {
-			const remainingSec = Math.ceil((lockInfo.lockoutUntil - now) / 1000);
-			return c.var.inertia.render("Lacak", {
-				error: `Terlalu banyak percobaan gagal. Akses dikunci sementara selama ${remainingSec} detik demi keamanan.`,
-			});
-		}
+			// Check Lockout Status per IP
+			const lockInfo = FAILED_ATTEMPTS.get(ipAddress);
+			const now = Date.now();
+			if (lockInfo && lockInfo.lockoutUntil > now) {
+				const remainingSec = Math.ceil((lockInfo.lockoutUntil - now) / 1000);
+				return c.var.inertia.render("Lacak", {
+					error: `Terlalu banyak percobaan gagal. Akses dikunci sementara selama ${remainingSec} detik demi keamanan.`,
+				});
+			}
 
-		if (!ticketNumber || !secretCode) {
-			return c.var.inertia.render("Lacak", {
-				error: "Mohon masukkan Nomor Laporan dan Kode Pelacakan Rahasia.",
-			});
-		}
+			if (!ticketNumber || !secretCode) {
+				return c.var.inertia.render("Lacak", {
+					error: "Mohon masukkan Nomor Laporan dan Kode Pelacakan Rahasia.",
+				});
+			}
 
-		const report = findReportByTicket.get(ticketNumber);
-		if (!report) {
-			// Record failed attempt
-			const currentAttempts = (lockInfo?.count || 0) + 1;
-			const lockoutUntil = currentAttempts >= 5 ? now + 15 * 60 * 1000 : 0; // Lockout for 15 mins after 5 failures
-			FAILED_ATTEMPTS.set(ipAddress, { count: currentAttempts, lockoutUntil });
+			const report = findReportByTicket.get(ticketNumber);
+			if (!report) {
+				// Record failed attempt
+				const currentAttempts = (lockInfo?.count || 0) + 1;
+				const lockoutUntil = currentAttempts >= 5 ? now + 15 * 60 * 1000 : 0; // Lockout for 15 mins after 5 failures
+				FAILED_ATTEMPTS.set(ipAddress, { count: currentAttempts, lockoutUntil });
 
-			insertAuditLog.run(
-				null,
-				"Pengunjung Publik",
-				"Percobaan Pelacakan Gagal",
-				ticketNumber,
-				ipAddress,
-				`Percobaan pelacakan gagal untuk nomor tiket '${ticketNumber}'.`,
-			);
+				insertAuditLog.run(
+					null,
+					"Pengunjung Publik",
+					"Percobaan Pelacakan Gagal",
+					ticketNumber,
+					ipAddress,
+					`Percobaan pelacakan gagal untuk nomor tiket '${ticketNumber}'.`,
+				);
 
-			return c.var.inertia.error("Lacak", { tracking: GENERIC_TRACKING_ERROR });
-		}
+				return c.var.inertia.error("Lacak", { tracking: GENERIC_TRACKING_ERROR });
+			}
 
-		const isValid = await Bun.password.verify(secretCode, report.secretCodeHash);
-		if (!isValid) {
-			// Record failed attempt
-			const currentAttempts = (lockInfo?.count || 0) + 1;
-			const lockoutUntil = currentAttempts >= 5 ? now + 15 * 60 * 1000 : 0;
-			FAILED_ATTEMPTS.set(ipAddress, { count: currentAttempts, lockoutUntil });
+			let isValid = false;
+			try {
+				if (report.secretCodeHash) {
+					isValid = await Bun.password.verify(secretCode, report.secretCodeHash);
+				}
+			} catch (err) {
+				console.error("[lacak] Password hash verification error:", err);
+				isValid = false;
+			}
 
-			insertAuditLog.run(
-				null,
-				"Pengunjung Publik",
-				"Percobaan Pelacakan Gagal",
-				ticketNumber,
-				ipAddress,
-				`Percobaan pelacakan gagal (kode rahasia salah) untuk nomor tiket '${ticketNumber}'.`,
-			);
+			if (!isValid) {
+				// Record failed attempt
+				const currentAttempts = (lockInfo?.count || 0) + 1;
+				const lockoutUntil = currentAttempts >= 5 ? now + 15 * 60 * 1000 : 0;
+				FAILED_ATTEMPTS.set(ipAddress, { count: currentAttempts, lockoutUntil });
 
-			return c.var.inertia.error("Lacak", { tracking: GENERIC_TRACKING_ERROR });
-		}
+				insertAuditLog.run(
+					null,
+					"Pengunjung Publik",
+					"Percobaan Pelacakan Gagal",
+					ticketNumber,
+					ipAddress,
+					`Percobaan pelacakan gagal (kode rahasia salah) untuk nomor tiket '${ticketNumber}'.`,
+				);
+
+				return c.var.inertia.error("Lacak", { tracking: GENERIC_TRACKING_ERROR });
+			}
 
 		// Reset failed attempts on success
 		FAILED_ATTEMPTS.delete(ipAddress);
@@ -149,6 +160,12 @@ export const lacakRoutes = () => {
 				})),
 			},
 		});
+		} catch (err) {
+			console.error("[lacak] Internal error in POST /lacak:", err);
+			return c.var.inertia.render("Lacak", {
+				error: "Terjadi kesalahan sistem saat melacak laporan. Silakan periksa kembali data Anda.",
+			});
+		}
 	});
 
 	app.get("/lacak/:nomor", (c) => {
