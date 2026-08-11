@@ -11,6 +11,7 @@
  */
 import type { Context, Next } from "hono";
 import type { AppEnv } from "./inertia-middleware";
+import { config } from "./config";
 import { safeUrl } from "./url";
 
 const UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
@@ -19,10 +20,21 @@ export const checkOrigin = async (c: Context<AppEnv>, next: Next) => {
 	if (UNSAFE_METHODS.has(c.req.raw.method)) {
 		const origin = c.req.raw.headers.get("origin");
 		if (origin) {
-			// A malformed Origin is treated as cross-origin (suspicious).
+			const headers = Object.fromEntries(c.req.raw.headers.entries());
 			const originHost = safeUrl(origin).host;
-			const requestHost = safeUrl(c.req.raw.url).host;
-			if (originHost !== requestHost) {
+			const requestHost = safeUrl(c.req.raw.url, headers).host;
+			const configHost = safeUrl(config.appUrl).host;
+
+			const originHostname = originHost.split(":")[0];
+			const requestHostname = requestHost.split(":")[0];
+			const configHostname = configHost.split(":")[0];
+
+			const isSameOrigin =
+				originHost === requestHost ||
+				originHostname === requestHostname ||
+				originHostname === configHostname;
+
+			if (!isSameOrigin) {
 				return new Response("Cross-origin requests are not allowed", {
 					status: 403,
 				});
