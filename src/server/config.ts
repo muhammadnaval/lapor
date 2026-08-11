@@ -49,10 +49,10 @@ export const config = {
 	ssr: process.env.SSR !== "false",
 	port: Number(pick(process.env.PORT, "4000")),
 	/** Absolute base URL — used for email links and OAuth redirect URIs. */
-	appUrl: pick(process.env.APP_URL, "http://localhost:4000").replace(
-		/\/+$/,
-		"",
-	),
+	appUrl: pick(process.env.APP_URL, "http://localhost:4000")
+		.replace(/\/+$/, "")
+		.replace(/^https\/\//i, "https://")
+		.replace(/^http\/\//i, "http://"),
 	dbPath: pick(process.env.DATABASE_PATH, "./data/app.sqlite"),
 	upload: {
 		/** Directory where tus upload chunks are stored on disk. */
