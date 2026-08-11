@@ -57,12 +57,28 @@ export class Inertia {
 	}
 
 	/** The request URL. `request.url` is guaranteed valid by the fetch spec;
-	 *  the guard only keeps a malformed URL from crashing the whole request. */
+	 *  respects reverse proxy headers (X-Forwarded-Proto/Host) & config.appUrl
+	 *  so redirects in HTTPS reverse proxies (Nginx, Caddy, SafeLine WAF) never
+	 *  emit HTTP scheme URLs. */
 	private get requestUrl(): URL {
 		try {
-			return new URL(this.c.request.url);
+			const url = new URL(this.c.request.url);
+			const proto =
+				this.c.headers["x-forwarded-proto"] ||
+				(config.appUrl.startsWith("https") ? "https" : undefined);
+			const host = this.c.headers["x-forwarded-host"] || this.c.headers.host;
+			if (proto) url.protocol = proto.endsWith(":") ? proto : `${proto}:`;
+			if (host) {
+				const parts = host.split(":");
+				const hostname = parts[0];
+				const port = parts[1];
+				if (hostname) url.hostname = hostname;
+				if (port) url.port = port;
+				else if (proto === "https" || !port) url.port = "";
+			}
+			return url;
 		} catch {
-			return new URL("http://localhost/");
+			return new URL(config.appUrl);
 		}
 	}
 

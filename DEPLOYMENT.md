@@ -116,3 +116,21 @@ Pastikan pada berkas `.env` aplikasi backend di server:
 ```ini
 APP_URL=https://lapor.mtsn3padang.sch.id
 ```
+
+---
+
+## 6. Konfigurasi Caddy Web Server sebagai Reverse Proxy (Caddyfile)
+
+Jika Anda menggunakan **Caddy Server** sebagai Reverse Proxy:
+
+```caddyfile
+lapor.mtsn3padang.sch.id {
+    reverse_proxy 127.0.0.1:4000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
+}
+```
