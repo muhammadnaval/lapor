@@ -33,10 +33,17 @@ const MAX_BUCKETS = 10_000;
 type BunServer = Server<any>;
 
 function clientKey(request: Request, server: BunServer | null): string {
-	const forwarded = request.headers.get("x-forwarded-for");
-	if (forwarded) return forwarded.split(",")[0]!.trim();
-	const ip = server?.requestIP?.(request)?.address;
-	return ip ?? "local";
+	try {
+		const forwarded = request.headers.get("x-forwarded-for");
+		if (forwarded) {
+			const first = forwarded.split(",")[0];
+			if (first) return first.trim();
+		}
+		const ip = server?.requestIP?.(request)?.address;
+		return ip ?? "local";
+	} catch {
+		return "local";
+	}
 }
 
 export function rateLimit({ max, windowSeconds }: RateLimitOptions) {

@@ -139,6 +139,7 @@ export function createApp(assets: InertiaAssets) {
 	});
 
 	app.onError(async (err, c) => {
+		console.error("[app.onError]", c.req.method, c.req.path, err);
 		logError(c, err);
 		const pathname = safeUrl(c.req.url).pathname;
 
@@ -162,6 +163,14 @@ export function createApp(assets: InertiaAssets) {
 			}
 			if (!component) return c.json({ errors }, 422);
 			return inertiaFromContext(c, assets).error(component, errors);
+		}
+
+		if (c.req.header("x-inertia")) {
+			return inertiaFromContext(c, assets).render(
+				"Lacak",
+				{ error: "Terjadi kesalahan server internal. Silakan coba beberapa saat lagi." },
+				{ status: 500 },
+			);
 		}
 
 		return c.text("Internal Server Error", 500);
